@@ -10,7 +10,7 @@
                 <div class="card-body">
                     <div class="form-group row">
                         <div class="col-md-6 offset-md-3">
-                            <a href="{{ route('login.name') }}" class="btn btn-danger btn-block">Зарегистрироваться с помощью Google</a>
+                            <a href="{{ route('login.google') }}" class="btn btn-danger btn-block">Зарегистрироваться с помощью Google</a>
                         </div>
                     </div>
                 </div>
