@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use App\Repositories\MyUserRepository;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -27,11 +26,11 @@ class LoginController extends Controller
 
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->stateless()->redirect();
+        return Socialite::driver('google')->redirect();
     }
     public function handleGoogleCallback()
     {
-        $user = Socialite::driver('google')->stateless()->user();
+        $user = Socialite::driver('google')->user();
         $this->_registerOrLoginUser($user);
         return redirect()->route('home');
     }
@@ -40,9 +39,13 @@ class LoginController extends Controller
     {
         $user = $this->userRepository->getUserByEmail($data);
         if (!$user) {
+            return redirect('register')->with('status','register');
             $user = $this->userRepository->create($data);
         }
-
         Auth::login($user);
+    }
+    public function registerGoogle()
+    {
+        return Socialite::driver('google')->redirect();
     }
 }
