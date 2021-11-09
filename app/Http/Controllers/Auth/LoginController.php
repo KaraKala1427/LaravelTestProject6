@@ -30,7 +30,7 @@ class LoginController extends Controller
     }
     public function googleSignUp()
     {
-        $redirectRegisterUri = 'http://127.0.0.1:8000/register/google/callback';
+        $redirectRegisterUri = config('services.google.redirect_register');
         return Socialite::driver('google')->redirectUrl($redirectRegisterUri)->redirect();
     }
     public function googleLoginHandler()
@@ -42,7 +42,7 @@ class LoginController extends Controller
     }
     public function googleSignUpHandler()
     {
-        $redirectRegisterUri = 'http://127.0.0.1:8000/register/google/callback';
+        $redirectRegisterUri = config('services.google.redirect_register');
         $user = Socialite::driver('google')->redirectUrl($redirectRegisterUri)->user();
         $resultBool = $this->registerUser($user);
         if($resultBool) return redirect()->route('home')->with('status','Поздравляем с успешной регистрацией');
