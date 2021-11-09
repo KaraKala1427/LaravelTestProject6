@@ -24,27 +24,29 @@ class LoginController extends Controller
     }
 
 
-    public function redirectToGoogle()
+    public function googleLogin()
     {
         return Socialite::driver('google')->redirect();
     }
-    public function redirectToGoogleRegister()
+    public function googleSignUp()
     {
-        return Socialite::driver('google')->redirect();
+        $redirectRegisterUri = 'http://127.0.0.1:8000/register/google/callback';
+        return Socialite::driver('google')->redirectUrl($redirectRegisterUri)->redirect();
     }
-    public function handleGoogleCallback()
+    public function googleLoginHandler()
     {
         $user = Socialite::driver('google')->user();
         $resultBool = $this->loginUser($user);
         if($resultBool) return redirect()->route('home')->with('status','Вы успешно авторизованы');
         return redirect()->route('register')->with('status','Вы не зарегистрированы');
     }
-    public function handleGoogleCallbackRegister()
+    public function googleSignUpHandler()
     {
-        $user = Socialite::driver('google')->user();
+        $redirectRegisterUri = 'http://127.0.0.1:8000/register/google/callback';
+        $user = Socialite::driver('google')->redirectUrl($redirectRegisterUri)->user();
         $resultBool = $this->registerUser($user);
         if($resultBool) return redirect()->route('home')->with('status','Поздравляем с успешной регистрацией');
-        return redirect()->route('register')->with('status','Вы не зарегистрированы');
+        return redirect()->route('login')->with('status','Вы уже у нас зарегистрированы, просто войдите');
     }
 
     protected function loginUser($data)
@@ -59,11 +61,16 @@ class LoginController extends Controller
 
     public function registerUser($data)
     {
-        $user = $this->userRepository->create($data);
-        if(!$user) {
-            return false;
+        $user = $this->userRepository->getUserByEmail($data);
+        if (!$user) {
+            $user = $this->userRepository->create($data);
+            if(!$user) {
+                return false;
+            }
+            Auth::login($user);
+            return true;
         }
-        Auth::login($user);
-        return true;
+        return false;
+
     }
 }
